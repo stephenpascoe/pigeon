@@ -178,8 +178,7 @@ class RemoteFlowcellDir(FlowcellDir):
         for path in [x['Key'] for x in self._s3.list_objects(
             Bucket=self._bucket, Prefix=self._prefix.as_posix()+'/', Delimiter='/')['Contents']]:
             if table_name := self._table_name_from_path(path):
-                # TODO : Make relative to prefix
-                tables[table_name] = path
+                tables[table_name] = P.Path(path).relative_to(self._prefix)
 
         return tables
     

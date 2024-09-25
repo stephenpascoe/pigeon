@@ -32,6 +32,7 @@ def eg_flowcell_dir(s3_client):
 # Tests
 
 def test_available_tables(eg_flowcell_dir):
+    """The available table dictionary should have a final_summary table"""
 
     tables = eg_flowcell_dir.get_available_tables()
 
@@ -42,7 +43,7 @@ def test_table_name(eg_flowcell_dir):
     """The available table dictionary should have values of filenames of the tables"""
     tables = eg_flowcell_dir.get_available_tables()
 
-    filename = tables['final_summary']
+    filename = str(tables['final_summary'])
     print(filename)
 
     assert filename.startswith('final_summary')
