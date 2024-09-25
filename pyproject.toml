@@ -1,0 +1,36 @@
+[project]
+authors = [{name = "Stephen Pascoe", email = "Stephen.Pascoe@nanoporetech.com"}]
+dependencies = []
+description = "Add a short description here"
+name = "pigeon"
+requires-python = ">= 3.11"
+version = "0.1.0"
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.pixi.project]
+channels = ["conda-forge", "bioconda"]
+platforms = ["osx-arm64"]
+
+[tool.pixi.dependencies]
+python = ">=3.12.6,<4"
+ipython = ">=8.27.0,<9"
+pysam = ">=0.22.1,<0.23"
+jupyterlab = ">=4.2.5,<5"
+boto3 = ">=1.35.24,<2"
+pandas = ">=2.2.3,<3"
+
+[project.optional-dependencies]
+test = ["pytest", "black"]
+
+[tool.pixi.pypi-dependencies]
+duckdb = ">=1.1.0, <2"
+pyarrow = ">=17.0.0, <18"
+pigeon = { path = ".", editable = true }
+
+[tool.pixi.envorinments]
+test = {features=["test"], solve-group="default"}
+
+[tool.pixi.tasks]
