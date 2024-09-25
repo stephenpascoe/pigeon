@@ -115,7 +115,7 @@ class Store:
 
     """
 
-    def __init__(self, path: str, boto_session: Optional[boto3.Session]=None):
+    def __init__(self, path: str):
         """
         :param path: path to underlying duckdb database
         :param boto_session: Session to use for connecting to S3
@@ -155,6 +155,12 @@ class FlowcellDir:
         Return a dictionary of table files available in this flowcell directory.
         """
         raise NotImplementedError
+    
+    def make_table_relation(self, table_name: str, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
+        """
+        Return a duckdb relation for a given table
+        """
+        raise NotImplementedError
 
 
 class RemoteFlowcellDir(FlowcellDir):
@@ -182,6 +188,14 @@ class RemoteFlowcellDir(FlowcellDir):
 
         return tables
     
+    def make_table_relation(self, table_name: str, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
+        tables = self.get_available_tables()
+        csv_path = f's3://{self._bucket}/{self._prefix}/{tables[table_name]}'
+
+        rel = connection.sql(f"pivot read_csv('{csv_path}', header=false, delim='=', names=['key', 'value']) on key using any_value(value)")
+
+        return rel
+       
     # --------
 
     @staticmethod
