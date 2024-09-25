@@ -1,0 +1,28 @@
+[project]
+name = "duckdb"
+version = "0.1.0"
+description = "Add a short description here"
+authors = ["Stephen Pascoe <Stephen.Pascoe@nanoporetech.com>"]
+channels = ["conda-forge", "bioconda"]
+platforms = ["osx-arm64"]
+
+[tasks]
+
+[dependencies]
+python = ">=3.12.6,<4"
+ipython = ">=8.27.0,<9"
+pysam = ">=0.22.1,<0.23"
+jupyterlab = ">=4.2.5,<5"
+boto3 = ">=1.35.24,<2"
+pandas = ">=2.2.3,<3"
+
+[pypi-dependencies]
+duckdb = ">=1.1.0, <2"
+pyarrow = ">=17.0.0, <18"
+
+[feature.test.dependencies]
+pytest = "*"
+black = "*"
+
+[environments]
+test = ["test"]
