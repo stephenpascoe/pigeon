@@ -30,7 +30,7 @@ duckdb = ">=1.1.0, <2"
 pyarrow = ">=17.0.0, <18"
 pigeon = { path = ".", editable = true }
 
-[tool.pixi.envorinments]
+[tool.pixi.environments]
 test = {features=["test"], solve-group="default"}
 
 [tool.pixi.tasks]
