@@ -245,8 +245,7 @@ class Store:
     def insert_flowcell(self, flowcell_dir: FlowcellDir) -> None:
         rel = flowcell_dir.make_table_relation('final_summary', self._conn)
 
-        # TODO : much more efficient way of doing this
-        final_summary = rel.df().iloc[0].to_dict()
+        final_summary = {k: v for (k, v) in zip(rel.columns, rel.fetchone())}
 
         # TODO : Resolve run_id vs acquisition_run_id
         run_id = final_summary['acquisition_run_id']
