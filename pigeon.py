@@ -192,7 +192,28 @@ class RemoteFlowcellDir(FlowcellDir):
         tables = self.get_available_tables()
         csv_path = f's3://{self._bucket}/{self._prefix}/{tables[table_name]}'
 
-        rel = connection.sql(f"pivot read_csv('{csv_path}', header=false, delim='=', names=['key', 'value']) on key using any_value(value)")
+        match table_name:
+            case 'final_summary':
+                rel = connection.sql(f"pivot read_csv('{csv_path}', header=false, delim='=', names=['key', 'value']) on key using any_value(value)")
+            case 'pore_activity':
+                rel = connection.sql(f"""
+                    pivot read_csv('{csv_path}', 
+                                names=['channel_state', 'experiment_time', 'state_time']
+                            )
+                    on channel_state
+                    using sum(state_time)
+                    group by experiment_time
+                    order by experiment_time
+                """)
+            case 'throughput':
+                rel = connection.read_csv(csv_path,
+                        names=['experiment_time', 'reads', 'basecalled_reads_passed', 'basecalled_reads_failed', 'basecalled_reads_skipped', 'selected_raw_samples',
+                        'selected_events', 'estimated_bases', 'basecalled_bases',  'basecalled_samples']
+                )
+            case 'sequencing_summary':
+                rel = connection.read_csv(csv_path)
+            case _:
+                raise ValueError(f'unhandled table name {table_name}')
 
         return rel
        

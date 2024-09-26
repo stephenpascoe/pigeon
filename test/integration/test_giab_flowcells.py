@@ -60,12 +60,18 @@ def test_table_name(eg_flowcell_dir: RemoteFlowcellDir):
     assert filename.endswith('.txt')
 
 
-def test_final_summary_relation(eg_flowcell_dir: RemoteFlowcellDir, store: pigeon.Store):
-    """A flowcell_dir can return a relation which extracts final-summary data"""
+@pytest.mark.parametrize('table_name', pigeon.SCHEMAS.keys())
+def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, store: pigeon.Store):
+    """RemoteFlowcellDir can create a relation for each table with the correct columns"""
 
-    columns = [x[0] for x in pigeon.SCHEMAS['final_summary']]
+    # Store will add extra columns from funal_summary before insertion.
+    # Therefore remove these from the columns to consider.
+    columns = {x[0] for x in pigeon.SCHEMAS[table_name]}
+    if table_name in ['pore_activity', 'throughput']:
+        columns = columns ^ {'experiment_id', 'run_id'}
 
     # TODO : consider if Store._conn should be public
-    rel1 = eg_flowcell_dir.make_table_relation('final_summary', store._conn)
+    rel1 = eg_flowcell_dir.make_table_relation(table_name, store._conn)
 
-    assert rel1.columns == columns
+    assert type(rel1) is duckdb.DuckDBPyRelation
+    assert set(rel1.columns) == columns
