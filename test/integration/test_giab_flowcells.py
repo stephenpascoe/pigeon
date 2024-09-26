@@ -6,6 +6,8 @@ These tests interact with the ont-open-data bucket and are therefore integration
 """
 
 import pytest
+from typing import Generator
+import tempfile
 
 import duckdb
 
@@ -13,6 +15,8 @@ import pigeon
 from pigeon import RemoteFlowcellDir
 
 bucket = 'ont-open-data'
+
+eg_flowcell_run_id = 'c3641428eb90f0d05daec16022cd0cb46c20eafd'
 
 # --------
 # Fixtures
@@ -37,9 +41,17 @@ def store() -> pigeon.Store:
     return pigeon.Store(':memory:')
 
 
+@pytest.fixture
+def ondisk_store() -> Generator[pigeon.Store, None, None]:
+    with tempfile.NamedTemporaryFile() as tmp:
+        tmp.close()
+        store = pigeon.Store(tmp.name)
+        yield store
+        store.close()
+
 
 # --------
-# Tests
+# RemoteFlowcellDir tests
 
 def test_available_tables(eg_flowcell_dir: RemoteFlowcellDir):
     """The available table dictionary should have a final_summary table"""
@@ -75,3 +87,16 @@ def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, s
 
     assert type(rel1) is duckdb.DuckDBPyRelation
     assert set(rel1.columns) == columns
+
+
+# --------
+# Store tests
+
+
+def test_store1(ondisk_store, eg_flowcell_dir):
+    ondisk_store.insert_flowcell(eg_flowcell_dir)
+
+    data = ondisk_store._conn.sql('select acquisition_run_id from final_summary').fetchall()
+    
+    assert len(data) == 1
+    assert data[0][0] == eg_flowcell_run_id

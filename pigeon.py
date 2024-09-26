@@ -7,6 +7,7 @@ import duckdb
 import pathlib as P
 from typing import Optional, Dict
 import re
+from abc import ABC, abstractmethod
 
 import boto3
 from botocore import UNSIGNED
@@ -106,56 +107,22 @@ SCHEMAS = {
             ('end_reason', 'VARCHAR', 'YES', None, None, None)
         ]
     }
-# --------
 
-class Store:
-    """
-    A store is your one-stop-shop for querying signal, reads and alignments.
-
-
-    """
-
-    def __init__(self, path: str):
-        """
-        :param path: path to underlying duckdb database
-        :param boto_session: Session to use for connecting to S3
-
-        """
-        self._conn = duckdb.connect(path)
-        if not self._has_schema():
-            self._init_schema()
-
-    def close(self):
-        self._conn.close()
-
-    # --------
-
-    def _has_schema(self):
-        tables = [x[0] for x in self._conn.sql('show tables').fetchall()]
-        return 'final_summary' in tables
-    
-    def _init_schema(self):
-        for table_name, schema in SCHEMAS.items():
-            col_expr = []
-            for col in schema:
-                # TODO : Add nullable option
-                col_expr.append(f'{col[0]} {col[1]}')
-            col_expr_str = ', '.join(col_expr)
-            sql = f'create or replace table {table_name} ({col_expr_str})'
-            log.info(f'Creating table {table_name}')
-            log.debug(sql)        
-            self._conn.sql(sql)
 
 
 # TODO : Possibly abstract base class
-class FlowcellDir:
+class FlowcellDir(ABC):
+    """Interface to ways to extract table data from a filesystem of some sort.
+    """
 
+    @abstractmethod
     def get_available_tables(self) -> Dict[str, P.Path]:
         """
         Return a dictionary of table files available in this flowcell directory.
         """
         raise NotImplementedError
     
+    @abstractmethod
     def make_table_relation(self, table_name: str, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
         """
         Return a duckdb relation for a given table
@@ -234,6 +201,61 @@ class RemoteFlowcellDir(FlowcellDir):
         else:
             raise ValueError(f'Not recognised {p}')
         
+
+# --------
+
+class Store:
+    """
+    A store is your one-stop-shop for querying signal, reads and alignments.
+
+
+    """
+
+    def __init__(self, path: str):
+        """
+        :param path: path to underlying duckdb database
+        :param boto_session: Session to use for connecting to S3
+
+        """
+        self._conn = duckdb.connect(path)
+        if not self._has_schema():
+            self._init_schema()
+
+    def close(self):
+        self._conn.close()
+
+    # --------
+
+    def _has_schema(self):
+        tables = [x[0] for x in self._conn.sql('show tables').fetchall()]
+        return 'final_summary' in tables
+    
+    def _init_schema(self):
+        for table_name, schema in SCHEMAS.items():
+            col_expr = []
+            for col in schema:
+                # TODO : Add nullable option
+                col_expr.append(f'{col[0]} {col[1]}')
+            col_expr_str = ', '.join(col_expr)
+            sql = f'create or replace table {table_name} ({col_expr_str})'
+            log.info(f'Creating table {table_name}')
+            log.debug(sql)        
+            self._conn.sql(sql)
+
+    def insert_flowcell(self, flowcell_dir: FlowcellDir) -> None:
+        rel = flowcell_dir.make_table_relation('final_summary', self._conn)
+
+        # TODO : much more efficient way of doing this
+        final_summary = rel.df().iloc[0].to_dict()
+
+        # TODO : Resolve run_id vs acquisition_run_id
+        run_id = final_summary['acquisition_run_id']
+        log.info(f'Inserting flowcell run {run_id}')
+
+        log.info(f'Inserting final_summary for {run_id}')
+        self._conn.execute('insert into final_summary by name (select * from rel)')
+
+        # TODO : All other tables
 
 
 # --------
