@@ -22,6 +22,14 @@ eg_flowcell_experiment_id = 'r10p41_e8p2_human_runs_jkw'
 # --------
 # Fixtures
 
+class TruncatedRemoteFlowcellDir(RemoteFlowcellDir):
+    """Overrides relations returned from a RemoteFlowcellDir to reduce the number of rows returned"""
+    def make_table_relation(self, table_name: str, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
+        rel = super().make_table_relation(table_name, connection)
+
+        return rel.limit(50)
+
+
 @pytest.fixture(scope='module')
 def s3_client():
     s3 = pigeon.make_unsigned_s3()
@@ -32,7 +40,7 @@ def s3_client():
 def eg_flowcell_dir(s3_client) -> RemoteFlowcellDir:
     flowcell_prefix = 'giab_2023.05/flowcells/hg001/20230505_1857_1B_PAO99309_94e07fab/'
 
-    fdir = RemoteFlowcellDir(f's3://{bucket}/{flowcell_prefix}', s3_client=s3_client)
+    fdir = TruncatedRemoteFlowcellDir(f's3://{bucket}/{flowcell_prefix}', s3_client=s3_client)
 
     return fdir
 
@@ -105,8 +113,31 @@ def test_store1(store_with_flowcell):
     assert len(data) == 1
     assert data[0][0] == eg_flowcell_run_id
 
+
 def test_store2(store_with_flowcell):
     rel = store_with_flowcell._conn.sql('select * from pore_activity')
+    row = rel.fetchone()
+    row_dict = {k: v for (k, v) in zip(rel.columns, row)}
+
+    print(row)
+
+    assert row_dict['run_id'] == eg_flowcell_run_id
+    assert row_dict['experiment_id'] == eg_flowcell_experiment_id
+
+
+def test_store3(store_with_flowcell):
+    rel = store_with_flowcell._conn.sql('select * from throughput')
+    row = rel.fetchone()
+    row_dict = {k: v for (k, v) in zip(rel.columns, row)}
+
+    print(row)
+
+    assert row_dict['run_id'] == eg_flowcell_run_id
+    assert row_dict['experiment_id'] == eg_flowcell_experiment_id
+
+
+def test_store4(store_with_flowcell):
+    rel = store_with_flowcell._conn.sql('select * from sequencing_summary')
     row = rel.fetchone()
     row_dict = {k: v for (k, v) in zip(rel.columns, row)}
 

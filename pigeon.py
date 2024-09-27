@@ -263,8 +263,18 @@ class Store:
                 """)
         self._conn.execute('insert into pore_activity by name (select * from rel)')
 
-        # TODO : All other tables
+        log.info(f'Inserting throughput for {run_id}')
+        rel = flowcell_dir.make_table_relation('throughput', self._conn)
+        # Join experiment_id and run_id
+        rel = rel.project(f"""
+                '{final_summary['protocol_group_id']}' as experiment_id, 
+                '{final_summary['acquisition_run_id']}' as run_id, *
+                """)
+        self._conn.execute('insert into throughput by name (select * from rel)')
 
+        log.info(f'Inserting sequqncing_summary for {run_id}')
+        rel = flowcell_dir.make_table_relation('sequencing_summary', self._conn)
+        self._conn.execute('insert into sequencing_summary by name (select * from rel)')
 
 # --------
 
