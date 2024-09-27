@@ -17,17 +17,18 @@ from pigeon import RemoteFlowcellDir
 bucket = 'ont-open-data'
 
 eg_flowcell_run_id = 'c3641428eb90f0d05daec16022cd0cb46c20eafd'
+eg_flowcell_experiment_id = 'r10p41_e8p2_human_runs_jkw'
 
 # --------
 # Fixtures
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def s3_client():
     s3 = pigeon.make_unsigned_s3()
 
     return s3
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def eg_flowcell_dir(s3_client) -> RemoteFlowcellDir:
     flowcell_prefix = 'giab_2023.05/flowcells/hg001/20230505_1857_1B_PAO99309_94e07fab/'
 
@@ -41,7 +42,7 @@ def store() -> pigeon.Store:
     return pigeon.Store(':memory:')
 
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def ondisk_store() -> Generator[pigeon.Store, None, None]:
     with tempfile.NamedTemporaryFile() as tmp:
         tmp.close()
@@ -49,6 +50,11 @@ def ondisk_store() -> Generator[pigeon.Store, None, None]:
         yield store
         store.close()
 
+
+@pytest.fixture(scope='module')
+def store_with_flowcell(eg_flowcell_dir, ondisk_store) -> pigeon.Store:
+    ondisk_store.insert_flowcell(eg_flowcell_dir)
+    return ondisk_store
 
 # --------
 # RemoteFlowcellDir tests
@@ -93,10 +99,18 @@ def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, s
 # Store tests
 
 
-def test_store1(ondisk_store, eg_flowcell_dir):
-    ondisk_store.insert_flowcell(eg_flowcell_dir)
-
-    data = ondisk_store._conn.sql('select acquisition_run_id from final_summary').fetchall()
+def test_store1(store_with_flowcell):
+    data = store_with_flowcell._conn.sql('select acquisition_run_id from final_summary').fetchall()
     
     assert len(data) == 1
     assert data[0][0] == eg_flowcell_run_id
+
+def test_store2(store_with_flowcell):
+    rel = store_with_flowcell._conn.sql('select * from pore_activity')
+    row = rel.fetchone()
+    row_dict = {k: v for (k, v) in zip(rel.columns, row)}
+
+    print(row)
+
+    assert row_dict['run_id'] == eg_flowcell_run_id
+    assert row_dict['experiment_id'] == eg_flowcell_experiment_id
