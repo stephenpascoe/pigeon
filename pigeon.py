@@ -148,6 +148,7 @@ class RemoteFlowcellDir(FlowcellDir):
 
     def get_available_tables(self) -> Dict[str, P.Path]:
         tables = {}
+        # TODO : Handle when flowcell-dir has no tables.  E.g. giab_2023.05/flowcells/hg004/20230503_2350_2C_PAO98633_064894cd/
         for path in [x['Key'] for x in self._s3.list_objects(
             Bucket=self._bucket, Prefix=self._prefix.as_posix()+'/', Delimiter='/')['Contents']]:
             if table_name := self._table_name_from_path(path):
@@ -199,8 +200,9 @@ class RemoteFlowcellDir(FlowcellDir):
         if table_name := re.search(f'(.*)_{flowcell_id}_.*', p.name):
             return table_name.group(1)
         else:
-            raise ValueError(f'Not recognised {p}')
-        
+            # TODO : GIAB dataset contains extra tables: "full_ss_every_17.txt"
+            log.warning(f'Potential table file not recognised {p}')
+            return None
 
 # --------
 
@@ -272,7 +274,7 @@ class Store:
                 """)
         self._conn.execute('insert into throughput by name (select * from rel)')
 
-        log.info(f'Inserting sequqncing_summary for {run_id}')
+        log.info(f'Inserting sequencing_summary for {run_id}')
         rel = flowcell_dir.make_table_relation('sequencing_summary', self._conn)
         self._conn.execute('insert into sequencing_summary by name (select * from rel)')
 
