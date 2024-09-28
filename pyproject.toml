@@ -1,6 +1,6 @@
 [project]
 authors = [{name = "Stephen Pascoe", email = "Stephen.Pascoe@nanoporetech.com"}]
-dependencies = []
+dependencies = ["superset>=0.30.1,<0.31", "pyarrow>=14.0.1,<15", "apache-superset>=4.0.2,<5", "duckdb-engine>=0.13.2,<0.14"]
 description = "Add a short description here"
 name = "pigeon"
 requires-python = ">= 3.11"
@@ -15,19 +15,19 @@ channels = ["conda-forge", "bioconda"]
 platforms = ["osx-arm64"]
 
 [tool.pixi.dependencies]
-python = ">=3.12.6,<4"
+python = "<3.12"
 ipython = ">=8.27.0,<9"
 pysam = ">=0.22.1,<0.23"
 jupyterlab = ">=4.2.5,<5"
 boto3 = ">=1.35.24,<2"
-pandas = ">=2.2.3,<3"
+pandas = "<2.1"
+numpy = "==1.23.5"
 
 [project.optional-dependencies]
 test = ["pytest", "black"]
 
 [tool.pixi.pypi-dependencies]
 duckdb = ">=1.1.0, <2"
-pyarrow = ">=17.0.0, <18"
 pigeon = { path = ".", editable = true }
 
 [tool.pixi.environments]
