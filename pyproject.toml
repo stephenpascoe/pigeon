@@ -1,6 +1,5 @@
 [project]
 authors = [{name = "Stephen Pascoe", email = "Stephen.Pascoe@nanoporetech.com"}]
-dependencies = ["pyarrow>=14.0.1,<15", "apache-superset>=4.0.2,<5", "duckdb-engine>=0.13.2,<0.14"]
 description = "Add a short description here"
 name = "pigeon"
 requires-python = ">= 3.11"
@@ -28,6 +27,9 @@ test = ["pytest", "black"]
 
 [tool.pixi.pypi-dependencies]
 duckdb = ">=1.1.0, <2"
+pyarrow = ">=14.0.1,<15"
+apache-superset = ">=4.0.2,<5"
+duckdb-engine = ">=0.13.2,<0.14"
 pigeon = { path = ".", editable = true }
 
 [tool.pixi.environments]

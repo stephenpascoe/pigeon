@@ -5012,11 +5012,8 @@ packages:
   name: pigeon
   version: 0.1.0
   path: .
-  sha256: b6db67a4515fcdf5fd6301de76bc877c2351a1b41df07ec6498a44523c92a347
+  sha256: 2516d0fde05db92369f6975f5b6e8372e99db8afe564c9c88e8ca117bd73a02d
   requires_dist:
-  - pyarrow>=14.0.1,<15
-  - apache-superset>=4.0.2,<5
-  - duckdb-engine>=0.13.2,<0.14
   - pytest ; extra == 'test'
   - black ; extra == 'test'
   requires_python: '>=3.11'
