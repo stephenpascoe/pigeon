@@ -35,3 +35,7 @@ pigeon = { path = ".", editable = true }
 test = {features=["test"], solve-group="default"}
 
 [tool.pixi.tasks]
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pigeon"]
