@@ -7,16 +7,20 @@ FROM ubuntu:24.04
 RUN mkdir /opt/pigeon
 WORKDIR /opt/pigeon
 
+# Add key project files to the container
 COPY pyproject.toml .
 COPY pixi.lock .
 COPY src .
 
+# Install non-python build dependencies, install pixi and create the
+# pixi environment
 RUN apt-get update
 RUN apt-get -y install curl g++
 RUN curl -fsSL https://pixi.sh/install.sh | bash
 ARG PATH=/root/.pixi/bin:${PATH}
 RUN pixi install
 
+# Configure superset
 ARG SUPERSET_CONFIG_PATH=/opt/pigeon/superset_config.py
 ARG FLASK_APP=superset
 RUN mkdir data
@@ -31,5 +35,9 @@ RUN pixi run superset load_examples
 RUN pixi run superset init
 
 COPY superset/startup.sh .
+
+# Import datasources
+COPY superset/dataset_export.zip ./data
+RUN pixi run superset import_datasources -p /opt/pigeon/data/dataset_export.zip
 
 CMD ./startup.sh
