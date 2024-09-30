@@ -21,6 +21,7 @@ pysam = ">=0.22.1,<0.23"
 jupyterlab = ">=4.2.5,<5"
 boto3 = ">=1.35.24,<2"
 pandas = ">=2.2.3,<3"
+pip = ">=24.2,<25"
 
 [project.optional-dependencies]
 test = ["pytest", "black"]
