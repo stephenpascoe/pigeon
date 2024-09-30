@@ -267,7 +267,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/4a/9e/2fd1def6f640b216e7e0aa532af75822bc8a658dc242dda6c4c8765a1c25/sqlglot-23.17.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/98/5a/66d7c9305baa9f11857f247d4ba761402cea75db6058ff850ed7128957b7/sqlparse-0.4.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/58/13/8476c4328dcadfe26f8bd7f3a1a03bf9ddb890a7e7b692f54a179bc525bf/sshtunnel-0.4.0-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/46/a5/04f30b4d12c5c8c3b1b8bcb7cc70e6632b08d761eab514edf64232dee237/superset-0.30.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/92/4e/e5a13fdb3e6f81ce11893523ff289870c87c8f1f289a7369fb0e9840c3bb/tabulate-0.8.10-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/70/efa56ce2271c44a7f4f43533a0477e6854a0948e9f7b76491de1fd3be7c9/trio-0.26.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/48/be/a9ae5f50cad5b6f85bd2574c2c923730098530096e170c1ce7452394d7aa/trio_websocket-0.11.1-py3-none-any.whl
@@ -532,7 +531,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/4a/9e/2fd1def6f640b216e7e0aa532af75822bc8a658dc242dda6c4c8765a1c25/sqlglot-23.17.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/98/5a/66d7c9305baa9f11857f247d4ba761402cea75db6058ff850ed7128957b7/sqlparse-0.4.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/58/13/8476c4328dcadfe26f8bd7f3a1a03bf9ddb890a7e7b692f54a179bc525bf/sshtunnel-0.4.0-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/46/a5/04f30b4d12c5c8c3b1b8bcb7cc70e6632b08d761eab514edf64232dee237/superset-0.30.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/92/4e/e5a13fdb3e6f81ce11893523ff289870c87c8f1f289a7369fb0e9840c3bb/tabulate-0.8.10-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/70/efa56ce2271c44a7f4f43533a0477e6854a0948e9f7b76491de1fd3be7c9/trio-0.26.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/48/be/a9ae5f50cad5b6f85bd2574c2c923730098530096e170c1ce7452394d7aa/trio_websocket-0.11.1-py3-none-any.whl
@@ -818,7 +816,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/4a/9e/2fd1def6f640b216e7e0aa532af75822bc8a658dc242dda6c4c8765a1c25/sqlglot-23.17.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/98/5a/66d7c9305baa9f11857f247d4ba761402cea75db6058ff850ed7128957b7/sqlparse-0.4.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/58/13/8476c4328dcadfe26f8bd7f3a1a03bf9ddb890a7e7b692f54a179bc525bf/sshtunnel-0.4.0-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/46/a5/04f30b4d12c5c8c3b1b8bcb7cc70e6632b08d761eab514edf64232dee237/superset-0.30.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/92/4e/e5a13fdb3e6f81ce11893523ff289870c87c8f1f289a7369fb0e9840c3bb/tabulate-0.8.10-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/70/efa56ce2271c44a7f4f43533a0477e6854a0948e9f7b76491de1fd3be7c9/trio-0.26.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/48/be/a9ae5f50cad5b6f85bd2574c2c923730098530096e170c1ce7452394d7aa/trio_websocket-0.11.1-py3-none-any.whl
@@ -1089,7 +1086,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/4a/9e/2fd1def6f640b216e7e0aa532af75822bc8a658dc242dda6c4c8765a1c25/sqlglot-23.17.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/98/5a/66d7c9305baa9f11857f247d4ba761402cea75db6058ff850ed7128957b7/sqlparse-0.4.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/58/13/8476c4328dcadfe26f8bd7f3a1a03bf9ddb890a7e7b692f54a179bc525bf/sshtunnel-0.4.0-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/46/a5/04f30b4d12c5c8c3b1b8bcb7cc70e6632b08d761eab514edf64232dee237/superset-0.30.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/92/4e/e5a13fdb3e6f81ce11893523ff289870c87c8f1f289a7369fb0e9840c3bb/tabulate-0.8.10-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/1c/70/efa56ce2271c44a7f4f43533a0477e6854a0948e9f7b76491de1fd3be7c9/trio-0.26.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/48/be/a9ae5f50cad5b6f85bd2574c2c923730098530096e170c1ce7452394d7aa/trio_websocket-0.11.1-py3-none-any.whl
@@ -5016,9 +5012,8 @@ packages:
   name: pigeon
   version: 0.1.0
   path: .
-  sha256: 1bba71c557aa581340ad880441d81407b98146b6761d5861916c2c19bf2a318b
+  sha256: b6db67a4515fcdf5fd6301de76bc877c2351a1b41df07ec6498a44523c92a347
   requires_dist:
-  - superset>=0.30.1,<0.31
   - pyarrow>=14.0.1,<15
   - apache-superset>=4.0.2,<5
   - duckdb-engine>=0.13.2,<0.14
@@ -6450,12 +6445,6 @@ packages:
   - pkg:pypi/stack-data?source=hash-mapping
   size: 26205
   timestamp: 1669632203115
-- kind: pypi
-  name: superset
-  version: 0.30.1
-  url: https://files.pythonhosted.org/packages/46/a5/04f30b4d12c5c8c3b1b8bcb7cc70e6632b08d761eab514edf64232dee237/superset-0.30.1.tar.gz
-  sha256: b2507d78f57193e8e629110f11d6f8f326a7313f0cea912f637821a8be24d7ea
-  requires_python: ~=3.6
 - kind: pypi
   name: tabulate
   version: 0.8.10

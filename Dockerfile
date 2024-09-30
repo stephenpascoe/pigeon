@@ -7,10 +7,19 @@ FROM ubuntu:24.04
 RUN mkdir /opt/pigeon
 WORKDIR /opt/pigeon
 
-ADD pyproject.toml .
-ADD pixi.lock .
+COPY pyproject.toml .
+COPY pixi.lock .
+COPY src .
 
 RUN apt-get update
 RUN apt-get -y install curl g++
 RUN curl -fsSL https://pixi.sh/install.sh | bash
-RUN /root/.pixi/bin/pixi install
+ARG PATH=/root/.pixi/bin:${PATH}
+RUN pixi install
+
+ARG SUPERSET_CONFIG_PATH=/opt/pigeon/superset_config.py
+ARG FLASK_APP=superset
+RUN mkdir data
+COPY superset/superset_config.py .
+
+RUN pixi run superset db upgrade

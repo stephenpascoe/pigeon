@@ -26,7 +26,7 @@ MAPBOX_API_KEY = ''
 import os
 # Gets the directory of the current script file
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.abspath(os.path.join(SCRIPT_DIR, "superset.db"))
+DB_PATH = os.path.abspath(os.path.join(SCRIPT_DIR, "data", "superset.db"))
 SQLALCHEMY_DATABASE_URI = f"sqlite:///{DB_PATH}?check_same_thread=false"
 print(f"SQLite database path: {DB_PATH}")
 PREVENT_UNSAFE_DB_CONNECTIONS = False
