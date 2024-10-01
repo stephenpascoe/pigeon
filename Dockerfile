@@ -38,6 +38,6 @@ COPY superset/startup.sh .
 
 # Import datasources
 COPY superset/dataset_export.zip ./data
-RUN pixi run superset import_datasources -p /opt/pigeon/data/dataset_export.zip
+RUN pixi run superset import_dashboards -p /opt/pigeon/data/dashboard_export.zip
 
 CMD ./startup.sh
