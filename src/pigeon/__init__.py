@@ -8,6 +8,7 @@ import pathlib as P
 from typing import Optional, Dict
 import re
 from abc import ABC, abstractmethod
+import itertools
 
 import boto3
 from botocore import UNSIGNED
@@ -24,7 +25,7 @@ import logging
 log = logging.getLogger(__name__)
 
 # These were extracted from duckdb's schema auto-detection
-SCHEMAS = {
+FC_SCHEMAS = {
         'final_summary': [
             ('acquisition_run_id', 'VARCHAR', 'YES', None, None, None), 
             ('acquisition_stopped', 'VARCHAR', 'YES', None, None, None), 
@@ -108,6 +109,29 @@ SCHEMAS = {
         ]
     }
 
+SEQ_SCHEMAS = {
+    'cramstats': [
+        ('name', 'VARCHAR', 'YES', None, None, None),
+        ('ref', 'VARCHAR', 'YES', None, None, None),
+        ('coverage', 'DOUBLE', 'YES', None, None, None),
+        ('ref_coverage', 'DOUBLE', 'YES', None, None, None),
+        ('qstart', 'BIGINT', 'YES', None, None, None),
+        ('qend', 'BIGINT', 'YES', None, None, None),
+        ('rstart', 'BIGINT', 'YES', None, None, None),
+        ('rend', 'BIGINT', 'YES', None, None, None),
+        ('aligned_ref_len', 'BIGINT', 'YES', None, None, None),
+        ('direction', 'VARCHAR', 'YES', None, None, None),
+        ('length', 'BIGINT', 'YES', None, None, None),
+        ('read_length', 'BIGINT', 'YES', None, None, None),
+        ('match', 'BIGINT', 'YES', None, None, None),
+        ('ins', 'BIGINT', 'YES', None, None, None),
+        ('del', 'BIGINT', 'YES', None, None, None),
+        ('sub', 'BIGINT', 'YES', None, None, None),
+        ('iden', 'DOUBLE', 'YES', None, None, None),
+        ('acc', 'DOUBLE', 'YES', None, None, None)
+    ]
+}
+
 
 
 # TODO : Possibly abstract base class
@@ -156,6 +180,7 @@ class RemoteFlowcellDir(FlowcellDir):
 
         return tables
     
+    # TODO : Refactor to cover non-flowcell tables, e.g. cramstats
     def make_table_relation(self, table_name: str, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
         tables = self.get_available_tables()
         csv_path = f's3://{self._bucket}/{self._prefix}/{tables[table_name]}'
@@ -233,7 +258,7 @@ class Store:
         return 'final_summary' in tables
     
     def _init_schema(self):
-        for table_name, schema in SCHEMAS.items():
+        for table_name, schema in itertools.chain(FC_SCHEMAS.items(), SEQ_SCHEMAS.items()):
             col_expr = []
             for col in schema:
                 # TODO : Add nullable option
@@ -277,6 +302,7 @@ class Store:
         log.info(f'Inserting sequencing_summary for {run_id}')
         rel = flowcell_dir.make_table_relation('sequencing_summary', self._conn)
         self._conn.execute('insert into sequencing_summary by name (select * from rel)')
+
 
 # --------
 

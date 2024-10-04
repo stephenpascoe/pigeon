@@ -12,6 +12,7 @@ import pigeon
 
 bucket = 'ont-open-data'
 flowcell_path = 'giab_2023.05/flowcells/'
+cramstats_path = 'giab_2023.05/analysis/stats'
 
 log = logging.getLogger('make_giab_db')
 
@@ -23,6 +24,11 @@ def get_flowcell_paths(s3_client):
         for x in s3_client.list_objects(Bucket=bucket, Prefix=prefix, Delimiter='/')['CommonPrefixes']:
             yield x['Prefix']
 
+
+def cramstat_paths(s3_client):
+    for x in s3_client.list_objects(Bucket=bucket, Prefix=cramstats_path):
+        if x.endswith('cram.stats'):
+            yield x
 
 
 if __name__ == '__main__':

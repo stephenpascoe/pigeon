@@ -86,13 +86,13 @@ def test_table_name(eg_flowcell_dir: RemoteFlowcellDir):
     assert filename.endswith('.txt')
 
 
-@pytest.mark.parametrize('table_name', pigeon.SCHEMAS.keys())
+@pytest.mark.parametrize('table_name', pigeon.FC_SCHEMAS.keys())
 def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, store: pigeon.Store):
     """RemoteFlowcellDir can create a relation for each table with the correct columns"""
 
     # Store will add extra columns from funal_summary before insertion.
     # Therefore remove these from the columns to consider.
-    columns = {x[0] for x in pigeon.SCHEMAS[table_name]}
+    columns = {x[0] for x in pigeon.FC_SCHEMAS[table_name]}
     if table_name in ['pore_activity', 'throughput']:
         columns = columns ^ {'experiment_id', 'run_id'}
 
@@ -145,3 +145,12 @@ def test_store4(store_with_flowcell):
 
     assert row_dict['run_id'] == eg_flowcell_run_id
     assert row_dict['experiment_id'] == eg_flowcell_experiment_id
+
+
+def test_store_cramstats(store):
+    """Verify the cramstats table is created"""
+    rel = store._conn.sql('show tables')
+    tables = [x[0] for x in rel.fetchall()]
+
+    assert 'cramstats' in tables
+    
