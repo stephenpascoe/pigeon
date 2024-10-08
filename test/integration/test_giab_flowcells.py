@@ -12,7 +12,8 @@ import tempfile
 import duckdb
 
 import pigeon
-from pigeon import RemoteFlowcellDir
+import pigeon.flowcell_dir
+from pigeon.flowcell_dir import RemoteFlowcellDir
 
 bucket = 'ont-open-data'
 
@@ -86,13 +87,13 @@ def test_table_name(eg_flowcell_dir: RemoteFlowcellDir):
     assert filename.endswith('.txt')
 
 
-@pytest.mark.parametrize('table_name', pigeon.FC_SCHEMAS.keys())
+@pytest.mark.parametrize('table_name', pigeon.flowcell_dir.FC_SCHEMAS.keys())
 def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, store: pigeon.Store):
     """RemoteFlowcellDir can create a relation for each table with the correct columns"""
 
     # Store will add extra columns from funal_summary before insertion.
     # Therefore remove these from the columns to consider.
-    columns = {x[0] for x in pigeon.FC_SCHEMAS[table_name]}
+    columns = {x[0] for x in pigeon.flowcell_dir.FC_SCHEMAS[table_name]}
     if table_name in ['pore_activity', 'throughput']:
         columns = columns ^ {'experiment_id', 'run_id'}
 

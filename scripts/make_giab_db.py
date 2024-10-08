@@ -7,8 +7,7 @@ Create a duckdb database for data in the ONT Genome in a bottle (GIAB) dataset.
 import sys
 import logging
 
-import pigeon
-
+import pigeon.flowcell_dir
 
 bucket = 'ont-open-data'
 flowcell_path = 'giab_2023.05/flowcells/'
@@ -46,7 +45,7 @@ if __name__ == '__main__':
 
     for path in get_flowcell_paths(s3_client):
         log.info(f'Processing {path}')
-        fdir = pigeon.RemoteFlowcellDir(f's3://{bucket}/{path}', s3_client)
+        fdir = pigeon.flowcell_dir.RemoteFlowcellDir(f's3://{bucket}/{path}', s3_client)
         store.insert_flowcell(fdir)
 
     store.close()
