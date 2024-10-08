@@ -9,6 +9,7 @@ import logging
 
 import pigeon.flowcell_dir
 import pigeon.store
+import pigeon.cramstats_dir
 
 bucket = 'ont-open-data'
 flowcell_path = 'giab_2023.05/flowcells/'
@@ -48,5 +49,10 @@ if __name__ == '__main__':
         log.info(f'Processing {path}')
         fdir = pigeon.flowcell_dir.RemoteFlowcellDir(f's3://{bucket}/{path}', s3_client)
         store.insert_flowcell(fdir)
+
+    for path in cramstat_paths(s3_client):
+        log.info(f'Processing {path}')
+        cdir = pigeon.cramstats_dir.RemoteCramStatsDir(f's3://{bucket}/{path}', s3_client)
+        store.insert_cramstats(cdir)
 
     store.close()
