@@ -15,6 +15,7 @@ import pigeon
 import pigeon.flowcell_dir
 import pigeon.store
 from pigeon.flowcell_dir import RemoteFlowcellDir
+from pigeon.cramstats_dir import RemoteCramStatsDir
 
 bucket = 'ont-open-data'
 
@@ -32,6 +33,13 @@ class TruncatedRemoteFlowcellDir(RemoteFlowcellDir):
         return rel.limit(50)
 
 
+class TruncatedRemoteCramstatsDir(RemoteCramStatsDir):
+    def make_table_relation(self, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
+        rel = super().make_table_relation(connection)
+
+        return rel.limit(50)
+
+
 @pytest.fixture(scope='module')
 def s3_client():
     s3 = pigeon.make_unsigned_s3()
@@ -45,6 +53,14 @@ def eg_flowcell_dir(s3_client) -> RemoteFlowcellDir:
     fdir = TruncatedRemoteFlowcellDir(f's3://{bucket}/{flowcell_prefix}', s3_client=s3_client)
 
     return fdir
+
+@pytest.fixture(scope='module')
+def eg_cramstats_dir(s3_client) -> RemoteCramStatsDir:
+    cramstats_prefix = 'giab_2023.05/analysis/stats/hac_PAO83395.cram.stats'
+
+    cdir = TruncatedRemoteCramstatsDir(f's3://{bucket}/{cramstats_prefix}', s3_client=s3_client)
+
+    return cdir
 
 
 @pytest.fixture
@@ -64,6 +80,11 @@ def ondisk_store() -> Generator[pigeon.store.Store, None, None]:
 @pytest.fixture(scope='module')
 def store_with_flowcell(eg_flowcell_dir, ondisk_store) -> pigeon.store.Store:
     ondisk_store.insert_flowcell(eg_flowcell_dir)
+    return ondisk_store
+
+@pytest.fixture(scope='module')
+def store_with_cramstats(eg_cramstats_dir, ondisk_store) -> pigeon.store.Store:
+    ondisk_store.insert_cramstats(eg_cramstats_dir)
     return ondisk_store
 
 # --------
@@ -155,4 +176,12 @@ def test_store_cramstats(store):
     tables = [x[0] for x in rel.fetchall()]
 
     assert 'cramstats' in tables
-    
+
+def test_cramstats_relation(store_with_cramstats):
+    rel = store_with_cramstats._conn.sql('select * from cramstats')
+    row = rel.fetchone()
+    row_dict = {k: v for (k, v) in zip(rel.columns, row)}
+
+    print(row_dict)
+
+    assert row_dict['ref'] == 'chr1'

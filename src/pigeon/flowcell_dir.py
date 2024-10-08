@@ -8,6 +8,8 @@ import logging
 import boto3
 import duckdb
 
+from . import split_bucket
+
 log = logging.getLogger(__name__)
 
 
@@ -99,7 +101,7 @@ FC_SCHEMAS = {
 
 
 class FlowcellDir(ABC):
-    """Interface to ways to extract table data from a filesystem of some sort.
+    """Interface to ways to extract flowcell table data from a filesystem of some sort.
     """
 
     @abstractmethod
@@ -123,15 +125,7 @@ class RemoteFlowcellDir(FlowcellDir):
             s3_client = boto3.client('s3')
         self._s3 = s3_client
 
-        # Split path into bucket and key
-        url = urlparse(url)
-        if not url.scheme == 's3':
-            raise ValueError("RemoteFlowcellDir only supports S3")
-
-        self._bucket = url.netloc
-
-        # Remove '/' prefix
-        self._prefix = P.Path(url.path[1:])
+        self._bucket, self._prefix = split_bucket(url)
 
     def get_available_tables(self) -> Dict[str, P.Path]:
         tables = {}
@@ -143,7 +137,6 @@ class RemoteFlowcellDir(FlowcellDir):
 
         return tables
 
-    # TODO : Refactor to cover non-flowcell tables, e.g. cramstats
     def make_table_relation(self, table_name: str, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
         tables = self.get_available_tables()
         csv_path = f's3://{self._bucket}/{self._prefix}/{tables[table_name]}'

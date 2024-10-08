@@ -3,7 +3,7 @@ import logging
 
 import duckdb
 
-from pigeon import SEQ_SCHEMAS
+from pigeon.cramstats_dir import SEQ_SCHEMAS, RemoteCramStatsDir
 from pigeon.flowcell_dir import FC_SCHEMAS, FlowcellDir
 
 log = logging.getLogger(__name__)
@@ -78,3 +78,10 @@ class Store:
         log.info(f'Inserting sequencing_summary for {run_id}')
         rel = flowcell_dir.make_table_relation('sequencing_summary', self._conn)
         self._conn.execute('insert into sequencing_summary by name (select * from rel)')
+
+    def insert_cramstats(self, cramstats_dir: RemoteCramStatsDir) -> None:
+        # TODO : Add columns for model (hac/sup) and possibly flowcell
+
+        log.info(f'Inserting cramstats for {cramstats_dir}')
+        rel = cramstats_dir.make_table_relation(self._conn)
+        self._conn.execute('insert into cramstats  by name (select * from rel)')
