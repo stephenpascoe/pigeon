@@ -129,11 +129,14 @@ class RemoteFlowcellDir(FlowcellDir):
 
     def get_available_tables(self) -> Dict[str, P.Path]:
         tables = {}
-        # TODO : Handle when flowcell-dir has no tables.  E.g. giab_2023.05/flowcells/hg004/20230503_2350_2C_PAO98633_064894cd/
-        for path in [x['Key'] for x in self._s3.list_objects(
-            Bucket=self._bucket, Prefix=self._prefix.as_posix()+'/', Delimiter='/')['Contents']]:
-            if table_name := self._table_name_from_path(path):
-                tables[table_name] = P.Path(path).relative_to(self._prefix)
+
+        resp = self._s3.list_objects(
+            Bucket=self._bucket, Prefix=self._prefix.as_posix()+'/', Delimiter='/'
+        )
+        if 'Contents' in resp:
+            for path in (x['Key'] for x in resp['Contents']):
+                if table_name := self._table_name_from_path(path):
+                    tables[table_name] = P.Path(path).relative_to(self._prefix)
 
         return tables
 

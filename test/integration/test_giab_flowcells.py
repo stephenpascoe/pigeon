@@ -185,3 +185,12 @@ def test_cramstats_relation(store_with_cramstats):
     print(row_dict)
 
     assert row_dict['ref'] == 'chr1'
+
+def test_cramstats_relation_model(store_with_cramstats):
+    rel = store_with_cramstats._conn.sql('select * from cramstats')
+    row = rel.fetchone()
+    row_dict = {k: v for (k, v) in zip(rel.columns, row)}
+
+    print(row_dict)
+
+    assert row_dict['model'] == 'hac'

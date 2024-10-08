@@ -80,8 +80,12 @@ class Store:
         self._conn.execute('insert into sequencing_summary by name (select * from rel)')
 
     def insert_cramstats(self, cramstats_dir: RemoteCramStatsDir) -> None:
-        # TODO : Add columns for model (hac/sup) and possibly flowcell
+        model = cramstats_dir.get_model()
 
-        log.info(f'Inserting cramstats for {cramstats_dir}')
+        log.info(f'Inserting cramstats for {model} {cramstats_dir}')
         rel = cramstats_dir.make_table_relation(self._conn)
+        rel = rel.project(f"""
+                '{model}' as model, *
+                """)
+
         self._conn.execute('insert into cramstats  by name (select * from rel)')

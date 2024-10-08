@@ -10,6 +10,7 @@ from . import split_bucket
 
 SEQ_SCHEMAS = {
     'cramstats': [
+        ('model', 'VARCHAR', 'YES', None, None, None),
         ('name', 'VARCHAR', 'YES', None, None, None),
         ('ref', 'VARCHAR', 'YES', None, None, None),
         ('coverage', 'DOUBLE', 'YES', None, None, None),
@@ -38,6 +39,11 @@ class CramStatsDir(ABC):
     """
 
     @abstractmethod
+    def get_model(self) -> str:
+        """Return the model type (fast, hac, sup) deduced from available information"""
+        raise NotImplementedError
+
+    @abstractmethod
     def make_table_relation(self, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
         """
         Return a duckdb relation for the directory
@@ -52,6 +58,12 @@ class RemoteCramStatsDir(CramStatsDir):
         self._s3 = s3_client
 
         self._bucket, self._prefix = split_bucket(url)
+
+    def get_model(self) -> str:
+        model = self._prefix.name.split('_')[0]
+        assert model in ['fast', 'hac', 'sup']
+
+        return model
 
     def make_table_relation(self, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
         csv_path = f's3://{self._bucket}/{self._prefix}'
