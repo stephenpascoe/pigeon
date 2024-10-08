@@ -13,6 +13,7 @@ import duckdb
 
 import pigeon
 import pigeon.flowcell_dir
+import pigeon.store
 from pigeon.flowcell_dir import RemoteFlowcellDir
 
 bucket = 'ont-open-data'
@@ -47,21 +48,21 @@ def eg_flowcell_dir(s3_client) -> RemoteFlowcellDir:
 
 
 @pytest.fixture
-def store() -> pigeon.Store:
-    return pigeon.Store(':memory:')
+def store() -> pigeon.store.Store:
+    return pigeon.store.Store(':memory:')
 
 
 @pytest.fixture(scope='module')
-def ondisk_store() -> Generator[pigeon.Store, None, None]:
+def ondisk_store() -> Generator[pigeon.store.Store, None, None]:
     with tempfile.NamedTemporaryFile() as tmp:
         tmp.close()
-        store = pigeon.Store(tmp.name)
+        store = pigeon.store.Store(tmp.name)
         yield store
         store.close()
 
 
 @pytest.fixture(scope='module')
-def store_with_flowcell(eg_flowcell_dir, ondisk_store) -> pigeon.Store:
+def store_with_flowcell(eg_flowcell_dir, ondisk_store) -> pigeon.store.Store:
     ondisk_store.insert_flowcell(eg_flowcell_dir)
     return ondisk_store
 
@@ -88,7 +89,7 @@ def test_table_name(eg_flowcell_dir: RemoteFlowcellDir):
 
 
 @pytest.mark.parametrize('table_name', pigeon.flowcell_dir.FC_SCHEMAS.keys())
-def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, store: pigeon.Store):
+def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, store: pigeon.store.Store):
     """RemoteFlowcellDir can create a relation for each table with the correct columns"""
 
     # Store will add extra columns from funal_summary before insertion.

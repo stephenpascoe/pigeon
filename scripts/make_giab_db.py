@@ -8,6 +8,7 @@ import sys
 import logging
 
 import pigeon.flowcell_dir
+import pigeon.store
 
 bucket = 'ont-open-data'
 flowcell_path = 'giab_2023.05/flowcells/'
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     (db_path, ) = sys.argv[1:]
 
     s3_client = pigeon.make_unsigned_s3()
-    store = pigeon.Store(db_path)
+    store = pigeon.store.Store(db_path)
 
     for path in get_flowcell_paths(s3_client):
         log.info(f'Processing {path}')
