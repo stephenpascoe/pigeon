@@ -99,6 +99,11 @@ FC_SCHEMAS = {
         ]
     }
 
+class FlowcellDirError(Exception):
+    pass
+
+class TableNotPresent(FlowcellDirError):
+    pass
 
 class FlowcellDir(ABC):
     """Interface to ways to extract flowcell table data from a filesystem of some sort.
@@ -142,6 +147,9 @@ class RemoteFlowcellDir(FlowcellDir):
 
     def make_table_relation(self, table_name: str, connection: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyRelation:
         tables = self.get_available_tables()
+        if table_name not in tables:
+            raise TableNotPresent(f"Table {table_name} not present for this flowcell")
+
         csv_path = f's3://{self._bucket}/{self._prefix}/{tables[table_name]}'
 
         match table_name:

@@ -8,6 +8,7 @@ These tests interact with the ont-open-data bucket and are therefore integration
 import pytest
 from typing import Generator
 import tempfile
+from unittest.mock import patch
 
 import duckdb
 
@@ -125,6 +126,17 @@ def test_relation_columns(table_name: str, eg_flowcell_dir: RemoteFlowcellDir, s
     assert type(rel1) is duckdb.DuckDBPyRelation
     assert set(rel1.columns) == columns
 
+
+def test_missing_table(eg_flowcell_dir: RemoteFlowcellDir, store: pigeon.store.Store):
+    """If a table isn't present FlowcellDir will raise a TableNotPresent exception"""
+
+    # TODO : we don't need integrations for this test.  Should be unit test
+
+    tables = [x for x in pigeon.flowcell_dir.FC_SCHEMAS.keys() if x != 'final_summary']
+    with patch('pigeon.flowcell_dir.RemoteFlowcellDir.get_available_tables', return_value=tables) as func_mock:
+        with pytest.raises(pigeon.flowcell_dir.TableNotPresent):
+            rel = eg_flowcell_dir.make_table_relation('final_summary', store._conn)
+            print(rel)
 
 # --------
 # Store tests

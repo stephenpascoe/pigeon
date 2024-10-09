@@ -4,7 +4,7 @@ import logging
 import duckdb
 
 from pigeon.cramstats_dir import SEQ_SCHEMAS, RemoteCramStatsDir
-from pigeon.flowcell_dir import FC_SCHEMAS, FlowcellDir
+from pigeon.flowcell_dir import FC_SCHEMAS, FlowcellDir, TableNotPresent
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +46,12 @@ class Store:
             self._conn.sql(sql)
 
     def insert_flowcell(self, flowcell_dir: FlowcellDir) -> None:
-        rel = flowcell_dir.make_table_relation('final_summary', self._conn)
+        try:
+            rel = flowcell_dir.make_table_relation('final_summary', self._conn)
+        except TableNotPresent:
+            # TODO : should probably change return type and return failure here
+            log.warning(f'No final-summary table for {flowcell_dir}')
+            return
 
         final_summary = {k: v for (k, v) in zip(rel.columns, rel.fetchone())}
 
