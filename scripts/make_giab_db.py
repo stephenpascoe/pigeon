@@ -26,10 +26,10 @@ def get_flowcell_paths(s3_client):
             yield x['Prefix']
 
 
-def cramstat_paths(s3_client):
-    for x in s3_client.list_objects(Bucket=bucket, Prefix=cramstats_path):
-        if x.endswith('cram.stats'):
-            yield x
+def get_cramstats_paths(s3_client):
+    for path in (x['Key'] for x in s3_client.list_objects(Bucket=bucket, Prefix=cramstats_path)['Contents']):
+        if path.endswith('cram.stats'):
+            yield path
 
 
 if __name__ == '__main__':
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         fdir = pigeon.flowcell_dir.RemoteFlowcellDir(f's3://{bucket}/{path}', s3_client)
         store.insert_flowcell(fdir)
 
-    for path in cramstat_paths(s3_client):
+    for path in get_cramstats_paths(s3_client):
         log.info(f'Processing {path}')
         cdir = pigeon.cramstats_dir.RemoteCramStatsDir(f's3://{bucket}/{path}', s3_client)
         store.insert_cramstats(cdir)
