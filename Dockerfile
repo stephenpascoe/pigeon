@@ -2,7 +2,7 @@
 #
 # We are not using Superset's provided containers because we want a very minimal installation.
 
-FROM ubuntu:24.04
+FROM external-docker.artifactory.oxfordnanolabs.local/ubuntu:24.04
 
 RUN mkdir /opt/pigeon
 WORKDIR /opt/pigeon
