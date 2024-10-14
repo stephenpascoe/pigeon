@@ -31,7 +31,7 @@ RUN openssl rand -base64 12 >/opt/pigeon/data/ADMIN_PASSWORD
 RUN pixi run superset fab create-admin \
     --username admin --firstname the --lastname admin --email "the.admin@example.com" \
     --password $(cat /opt/pigeon/data/ADMIN_PASSWORD)
-RUN pixi run superset load_examples
+#RUN pixi run superset load_examples
 RUN pixi run superset init
 
 COPY superset/startup.sh .
